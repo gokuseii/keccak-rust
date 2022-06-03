@@ -115,26 +115,26 @@ impl KeccakF {
 }
 
 struct Keccak {
-    spoonge: KeccakSponge,
+    sponge: KeccakSponge,
 }
 
 impl Keccak {
     fn new(rate: u32, capacity: u32, out: u32) -> Self {
         Keccak {
-            spoonge: KeccakSponge::new(rate, capacity, out),
+            sponge: KeccakSponge::new(rate, capacity, out),
         }
     }
 
     fn clear(&mut self) {
-        self.spoonge.clear();
+        self.sponge.clear();
     }
 
     fn update(&mut self, message: &String) {
-        self.spoonge.update(message);
+        self.sponge.update(message);
     }
 
     fn hash(&mut self) -> String {
-        let mut temp = self.spoonge.clone();
+        let mut temp = self.sponge.clone();
         temp.absorb_all();
         let digest = temp.squeeze();
         fmt_hash(digest)
