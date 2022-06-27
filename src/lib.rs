@@ -1,3 +1,6 @@
 mod keccak;
-pub mod sponge;
-pub use keccak::KeccakF;
+mod sponge;
+
+pub use keccak::Keccak;
+pub(crate) use keccak::KeccakF;
+pub(crate) use sponge::KeccakSponge;
