@@ -114,29 +114,36 @@ impl KeccakF {
     }
 }
 
-struct Keccak {
+pub struct Keccak {
     sponge: KeccakSponge,
 }
 
 impl Keccak {
-    fn new(rate: u32, capacity: u32, out: u32) -> Self {
+    pub fn new(out: u32) -> Self {
+        let (rate, capacity) = match out {
+            224 => (1152, 448),
+            256 => (1088, 512),
+            384 => (832, 768),
+            512 => (576, 1024),
+            _ => panic!("Incorrect out length"),
+        };
         Keccak {
             sponge: KeccakSponge::new(rate, capacity, out),
         }
     }
 
-    fn clear(&mut self) {
+    pub fn clear(&mut self) {
         self.sponge.clear();
     }
 
-    fn update(&mut self, message: &String) {
+    pub fn update(&mut self, message: &String) {
         self.sponge.update(message);
     }
 
-    fn hash(&mut self) -> String {
-        let mut temp = self.sponge.clone();
-        temp.absorb_all();
-        let digest = temp.squeeze();
+    pub fn hash(&mut self) -> String {
+        let mut sponge = self.sponge.clone();
+        sponge.absorb_all();
+        let digest = sponge.squeeze();
         fmt_hash(digest)
     }
 }
@@ -147,7 +154,7 @@ mod tests {
 
     #[test]
     fn keccak224() {
-        let mut keccak224 = Keccak::new(1152, 448, 224);
+        let mut keccak224 = Keccak::new(224);
 
         let data = [
             ("f71837502ba8e10837bdd8d365adb85591895602fc552b48b7390abd", ""),
@@ -164,7 +171,7 @@ mod tests {
 
     #[test]
     fn keccak256() {
-        let mut keccak256 = Keccak::new(1088, 512, 256);
+        let mut keccak256 = Keccak::new(256);
 
         let data = [
             ("c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470", ""),
@@ -181,7 +188,7 @@ mod tests {
 
     #[test]
     fn keccak384() {
-        let mut keccak384 = Keccak::new(832, 768, 384);
+        let mut keccak384 = Keccak::new(384);
 
         let data = [
             ("2c23146a63a29acf99e73b88f8c24eaa7dc60aa771780ccc006afbfa8fe2479b2dd2b21362337441ac12b515911957ff", ""),
@@ -198,7 +205,7 @@ mod tests {
 
     #[test]
     fn keccak512() {
-        let mut keccak512 = Keccak::new(576, 1024, 512);
+        let mut keccak512 = Keccak::new(512);
 
         let data = [
             ("0eab42de4c3ceb9235fc91acffe746b29c29a8c366b7c60e4e67c466f36a4304c00fa9caf9d87976ba469bcbe06713b435f091ef2769fb160cdab33d3670680e", ""),
