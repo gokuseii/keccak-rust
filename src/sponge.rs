@@ -28,9 +28,9 @@ impl KeccakSponge {
         }
     }
 
-    fn padding(&self) -> Vec<u8> {
+    fn padding(&mut self) -> Vec<u8> {
         let mut data = self.data.clone();
-        let padd: u32 = self.block_size - data.len() as u32;
+        let padd: u32 = self.block_size - self.data.len() as u32;
         if padd == 1 {
             data.push(0x81);
         } else {
@@ -53,7 +53,7 @@ impl KeccakSponge {
     }
 
     pub fn absorb_chunks(&mut self, message_bytes: Vec<u8>) {
-        let mut m = message_bytes.clone();
+        let mut m = message_bytes;
         for _ in 0..self.b.div(8) {
             m.push(0x00);
         }
